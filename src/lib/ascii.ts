@@ -32,7 +32,7 @@ export const DEFAULT_ASCII_CONFIG: AsciiConfig = {
   chars: ASCII_CHAR_PRESETS[0],
   fontFamily: "monospace",
   fontSize: 16,
-  colour: "",
+  colour: ASCII_COLOUR_PRESETS[0],
   animate: true,
 };
 

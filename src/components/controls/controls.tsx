@@ -151,30 +151,6 @@ export function Controls() {
       <SidebarSeparator className="-ml-2 -mr-2" />
 
       <div className="flex flex-col gap-2">
-        <ControlsHeadingLabel className="mb-1">Font</ControlsHeadingLabel>
-
-        <div className="flex flex-col">
-          <ControlLabel>Size (px)</ControlLabel>
-          <ControlsNumberSlider
-            value={config.fontSize}
-            onValueChange={(fontSize) => updateConfig({ fontSize })}
-            min={ASCII_CONSTRAINTS.FONT_SIZE.MIN}
-            max={ASCII_CONSTRAINTS.FONT_SIZE.MAX}
-          />
-        </div>
-
-        <div className="-mt-0.5 flex flex-col gap-1.5">
-          <ControlLabel>Colour</ControlLabel>
-          <ColourInput
-            colour={config.colour}
-            onChange={(colour) => updateConfig({ colour })}
-          />
-        </div>
-      </div>
-
-      <SidebarSeparator className="-ml-2 -mr-2" />
-
-      <div className="flex flex-col gap-2">
         <ControlsHeadingLabel className="mb-1">Characters</ControlsHeadingLabel>
 
         <div className="flex flex-col gap-1.5">
@@ -223,6 +199,30 @@ export function Controls() {
               />
             </Button>
           </div>
+        </div>
+      </div>
+
+      <SidebarSeparator className="-ml-2 -mr-2" />
+
+      <div className="flex flex-col gap-2">
+        <ControlsHeadingLabel className="mb-1">Font</ControlsHeadingLabel>
+
+        <div className="flex flex-col">
+          <ControlLabel>Size (px)</ControlLabel>
+          <ControlsNumberSlider
+            value={config.fontSize}
+            onValueChange={(fontSize) => updateConfig({ fontSize })}
+            min={ASCII_CONSTRAINTS.FONT_SIZE.MIN}
+            max={ASCII_CONSTRAINTS.FONT_SIZE.MAX}
+          />
+        </div>
+
+        <div className="-mt-0.5 flex flex-col gap-1.5">
+          <ControlLabel>Colour</ControlLabel>
+          <ColourInput
+            colour={config.colour}
+            onChange={(colour) => updateConfig({ colour })}
+          />
         </div>
       </div>
     </div>

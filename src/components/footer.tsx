@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="flex h-12 w-full items-end justify-center p-2">
+    <footer className="flex h-12 w-full items-center justify-center">
       <span className="text-xs uppercase text-muted-foreground/30">
         Made by{" "}
         <a

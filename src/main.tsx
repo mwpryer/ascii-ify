@@ -14,7 +14,7 @@ createRoot(document.getElementById("root")!).render(
       <TooltipProvider>
         <SidebarProvider>
           <div className="flex w-full flex-col">
-            <div className="grid flex-1 place-items-center p-2 pb-0">
+            <div className="grid flex-1 place-items-center p-1 pb-0 sm:p-2 sm:pb-0">
               <App />
             </div>
             <Footer />

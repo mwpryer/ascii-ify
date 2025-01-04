@@ -6,7 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type DisplayContainerProps = React.ComponentProps<"div">;
 export function DisplayContainer({ children }: DisplayContainerProps) {
-  return <div className="h-full w-full p-0">{children}</div>;
+  return <div className="h-full w-full">{children}</div>;
 }
 
 type DisplayActionsContainerProps = React.ComponentProps<"div">;
