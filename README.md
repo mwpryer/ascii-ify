@@ -27,20 +27,20 @@ The core algorithm transforms visual media into ASCII art through the following 
 2. **Luminance Calculation**: The averaged RGB values are converted to a single luminance value using the ITU-R BT.709 coefficients, which reflect human perception of colour (green appears brighter than blue or red).
 
    ```math
-   Luminance = (R * 0.2126) + (G * 0.7152) + (B * 0.0722)
+   L = (R \cdot 0.2126) + (G \cdot 0.7152) + (B \cdot 0.0722) \quad \text{where } R,G,B \in [0,1]
    ```
 
 3. **Character Mapping**: The luminance value (0-255) is mapped to an index in the selected character set. Higher luminance values correspond to denser characters (like `@` or `#`), while lower values correspond to sparser characters (like spaces or dots).
 
-### Technical Details
+### Technologies
 
 The application is built using React with a focus on modular components and custom hooks. State management is handled via React Context.
 
 Custom hooks abstract the core application logic:
 
-- **`useWebcam`**: Manages webcam streams and previews
-- **`useUpload`**: Handles file uploads and previews
-- **`useAscii`**: Implements the core ASCII conversion logic and output
+- `useWebcam`: Manages webcam streams and previews
+- `useUpload`: Handles file uploads and previews
+- `useAscii`: Implements the core ASCII conversion logic and output
 
 ## Resources
 
