@@ -31,8 +31,8 @@ export const DEFAULT_ASCII_CONFIG: AsciiConfig = {
   outputHeight: 75,
   chars: ASCII_CHAR_PRESETS[0],
   fontFamily: "monospace",
-  fontSize: 16,
-  colour: ASCII_COLOUR_PRESETS[0],
+  fontSize: 14,
+  colour: ASCII_COLOUR_PRESETS[1],
   animate: true,
 };
 

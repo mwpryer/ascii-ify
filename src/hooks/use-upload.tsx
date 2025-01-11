@@ -6,7 +6,7 @@ export function useUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const [hasUpload, setHasUpload] = useState(false);
   const [type, setType] = useState<UploadType>(null);
-  const uploadRef = useRef<HTMLImageElement | null>(null);
+  const imageRef = useRef<HTMLImageElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -55,7 +55,7 @@ export function useUpload() {
     setType("image");
 
     const img = new Image();
-    uploadRef.current = img;
+    imageRef.current = img;
     const objectUrl = URL.createObjectURL(file);
     img.src = objectUrl;
     await img.decode();
@@ -89,8 +89,8 @@ export function useUpload() {
     setHasUpload(false);
     setType(null);
 
-    if (uploadRef.current) {
-      uploadRef.current = null;
+    if (imageRef.current) {
+      imageRef.current = null;
     }
 
     if (videoRef.current) {
@@ -118,7 +118,7 @@ export function useUpload() {
     if (!canvas || !canvas.parentElement) return;
 
     const observer = new ResizeObserver(() => {
-      if (hasUpload && uploadRef.current) paint(uploadRef.current);
+      if (hasUpload && imageRef.current) paint(imageRef.current);
     });
 
     observer.observe(canvas.parentElement);
