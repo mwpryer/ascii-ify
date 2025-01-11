@@ -140,3 +140,93 @@ export async function generateAsciiText(
   const ascii = generateAscii(imageData, config);
   return ascii.map((row) => row.map((cell) => cell.char).join("")).join("\n");
 }
+
+// Record ASCII video from a source video element
+export async function recordAscii(
+  video: HTMLVideoElement,
+  config: AsciiConfig,
+  mimeType: "video/webm" | "video/mp4",
+): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const offscreenVideo = document.createElement("video");
+    offscreenVideo.src = video.src;
+    offscreenVideo.muted = true;
+    offscreenVideo.playsInline = true;
+    offscreenVideo.style.width = "0px";
+    offscreenVideo.style.height = "0px";
+    offscreenVideo.style.pointerEvents = "none";
+    document.body.appendChild(offscreenVideo);
+
+    offscreenVideo.onloadedmetadata = () => {
+      // Create new canvases for offscreen rendering
+      const videoCanvas = document.createElement("canvas");
+      const asciiCanvas = document.createElement("canvas");
+      videoCanvas.width = offscreenVideo.videoWidth;
+      videoCanvas.height = offscreenVideo.videoHeight;
+      asciiCanvas.width = videoCanvas.width;
+      asciiCanvas.height = videoCanvas.height;
+
+      // Recording state
+      const videoCtx = videoCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
+      const stream = asciiCanvas.captureStream();
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: mimeType,
+      });
+      const chunks: Blob[] = [];
+      let animationId: number;
+
+      // Render loop
+      function render() {
+        if (offscreenVideo.ended || offscreenVideo.paused || !videoCtx) {
+          if (animationId) cancelAnimationFrame(animationId);
+          mediaRecorder.stop();
+          return;
+        }
+
+        if (animationId) cancelAnimationFrame(animationId);
+        videoCtx.drawImage(offscreenVideo, 0, 0);
+        renderAscii(videoCanvas, asciiCanvas, config);
+        animationId = requestAnimationFrame(render);
+      }
+
+      // Handle recording data
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      mediaRecorder.onstop = () => {
+        document.body.removeChild(offscreenVideo);
+        resolve(new Blob(chunks, { type: mimeType }));
+      };
+
+      // Start recording
+      offscreenVideo.currentTime = 0;
+      mediaRecorder.start();
+
+      // Start playback and rendering
+      offscreenVideo
+        .play()
+        .then(() => {
+          animationId = requestAnimationFrame(render);
+        })
+        .catch((err) => {
+          if (animationId) cancelAnimationFrame(animationId);
+          mediaRecorder.stop();
+          document.body.removeChild(offscreenVideo);
+          reject(err);
+        });
+      offscreenVideo.onerror = (err) => {
+        if (animationId) cancelAnimationFrame(animationId);
+        mediaRecorder.stop();
+        document.body.removeChild(offscreenVideo);
+        reject(err);
+      };
+    };
+
+    offscreenVideo.onerror = (err) => {
+      offscreenVideo.remove();
+      reject(err);
+    };
+  });
+}

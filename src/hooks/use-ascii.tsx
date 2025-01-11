@@ -1,15 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { AsciiConfig, generateAsciiText, renderAscii } from "@/lib/ascii";
+import {
+  AsciiConfig,
+  generateAsciiText,
+  recordAscii,
+  renderAscii,
+} from "@/lib/ascii";
 
 export function useAscii(
   source: HTMLCanvasElement | null,
   config: AsciiConfig,
 ) {
   const [isActive, setIsActive] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationId = useRef<number | null>(null);
 
+  // Render loop
   const render = useCallback(() => {
     const target = canvasRef.current;
     if (!source || !target) return;
@@ -49,8 +56,8 @@ export function useAscii(
   async function copy() {
     if (!source) return false;
 
-    const ascii = await generateAsciiText(source, config);
     try {
+      const ascii = await generateAsciiText(source, config);
       await navigator.clipboard.writeText(ascii);
       return true;
     } catch {
@@ -58,15 +65,35 @@ export function useAscii(
     }
   }
 
-  function download() {
+  async function download(video?: HTMLVideoElement) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const link = document.createElement("a");
+    setIsDownloading(true);
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    link.download = `ascii-${timestamp}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+    const filename = `ascii-${timestamp}`;
+
+    if (video && video.duration > 0) {
+      // Handle video download
+      const link = document.createElement("a");
+      const format = MediaRecorder.isTypeSupported("video/mp4")
+        ? "video/mp4"
+        : "video/webm";
+      const blob = await recordAscii(video, config, format);
+      const objectUrl = URL.createObjectURL(blob);
+      link.href = objectUrl;
+      link.download = `${filename}.${format.split("/")[1]}`;
+      link.click();
+      URL.revokeObjectURL(objectUrl);
+    } else {
+      // Handle image download
+      const link = document.createElement("a");
+      link.download = `${filename}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+
+    setIsDownloading(false);
   }
 
   // Reset animation on config change
@@ -98,5 +125,13 @@ export function useAscii(
     return hide;
   }, []);
 
-  return { isActive, canvasRef, show, hide, copy, download };
+  return {
+    isActive,
+    isDownloading,
+    canvasRef,
+    show,
+    hide,
+    copy,
+    download,
+  };
 }

@@ -26,9 +26,11 @@ export function UploadDisplay() {
     canvasRef: uploadCanvasRef,
     upload,
     clear,
+    videoRef,
   } = useUpload();
   const {
     isActive: isAsciiActive,
+    isDownloading: isAsciiDownloading,
     canvasRef: asciiCanvasRef,
     show: showAscii,
     hide: hideAscii,
@@ -93,10 +95,17 @@ export function UploadDisplay() {
           disabled={!hasUpload || !isAsciiActive}
         />
         <DisplayActionButton
-          onClick={downloadAscii}
+          onClick={() => {
+            if (videoRef.current) {
+              downloadAscii(videoRef.current);
+            } else {
+              downloadAscii();
+            }
+          }}
           icon={Download}
           tooltip="Download ASCII"
           disabled={!hasUpload || !isAsciiActive}
+          loading={isAsciiDownloading}
         />
       </DisplayActionsContainer>
 

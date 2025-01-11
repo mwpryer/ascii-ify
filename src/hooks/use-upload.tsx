@@ -138,5 +138,6 @@ export function useUpload() {
     canvasRef,
     upload,
     clear,
+    videoRef,
   };
 }

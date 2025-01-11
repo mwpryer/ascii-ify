@@ -14,7 +14,7 @@ Transform media into ASCII art in real-time using your webcam or uploaded files.
 - Real-time webcam feed conversion
 - Support for image and video file uploads
 - Customisable output dimensions, character sets, and colours
-- Copy ASCII to clipboard or download it as a PNG.
+- Copy ASCII to clipboard or download it as a PNG or MP4/WebM
 
 ## How It Works
 
