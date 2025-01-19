@@ -10,7 +10,6 @@ import {
 import { cn } from "@/lib/utils";
 import { ColourInput } from "@/components/controls/controls-colour-input";
 import { ControlsHeadingLabel } from "@/components/controls/controls-heading-label";
-import { DisplayToggle } from "@/components/display/display-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -73,11 +72,6 @@ export function Controls() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="sm:hidden">
-        <DisplayToggle />
-        <SidebarSeparator className="-ml-2 -mr-2 mt-2" />
-      </div>
-
       <div className="mb-1 flex items-center gap-2">
         <h2 className="text-sm font-semibold uppercase text-foreground">
           Controls

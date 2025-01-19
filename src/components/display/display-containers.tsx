@@ -14,9 +14,9 @@ export function DisplayActionsContainer({
   children,
 }: DisplayActionsContainerProps) {
   return (
-    <div className="grid grid-cols-2 items-center gap-2 p-2 sm:grid-cols-[1fr,auto,1fr]">
+    <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-2 bg-sidebar p-2">
       <div className="flex gap-2">{children}</div>
-      <DisplayToggle className="hidden sm:block" />
+      <DisplayToggle />
       <SidebarTrigger className="place-self-end" />
     </div>
   );

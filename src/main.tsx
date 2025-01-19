@@ -10,17 +10,17 @@ import { Footer } from "@/components/footer";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <AppProvider>
-      <TooltipProvider>
-        <SidebarProvider>
-          <div className="flex w-full flex-col">
-            <div className="grid flex-1 place-items-center p-1 pb-0 sm:p-2 sm:pb-0">
+    <TooltipProvider>
+      <SidebarProvider>
+        <div className="flex w-full flex-col">
+          <div className="grid flex-1 place-items-center p-1 pb-0 sm:p-2 sm:pb-0">
+            <AppProvider>
               <App />
-            </div>
-            <Footer />
+            </AppProvider>
           </div>
-        </SidebarProvider>
-      </TooltipProvider>
-    </AppProvider>
+          <Footer />
+        </div>
+      </SidebarProvider>
+    </TooltipProvider>
   </StrictMode>,
 );
