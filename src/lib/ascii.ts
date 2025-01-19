@@ -148,6 +148,13 @@ export async function recordAscii(
   mimeType: "video/webm" | "video/mp4",
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
+    const audioContext = new AudioContext();
+    const audioSource = audioContext.createMediaElementSource(video);
+    const audioDestination = audioContext.createMediaStreamDestination();
+    const speakerDestination = audioContext.destination;
+    audioSource.connect(audioDestination);
+    audioSource.connect(speakerDestination);
+
     const offscreenVideo = document.createElement("video");
     offscreenVideo.src = video.src;
     offscreenVideo.muted = true;
@@ -166,11 +173,17 @@ export async function recordAscii(
       asciiCanvas.width = videoCanvas.width;
       asciiCanvas.height = videoCanvas.height;
 
+      const stream = new MediaStream();
+      const canvasStream = asciiCanvas.captureStream();
+      canvasStream.getTracks().forEach((track) => stream.addTrack(track));
+      audioDestination.stream.getAudioTracks().forEach((track) => {
+        stream.addTrack(track);
+      });
+
       // Recording state
       const videoCtx = videoCanvas.getContext("2d", {
         willReadFrequently: true,
       });
-      const stream = asciiCanvas.captureStream();
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: mimeType,
       });
@@ -191,11 +204,14 @@ export async function recordAscii(
         animationId = requestAnimationFrame(render);
       }
 
-      // Handle recording data
+      // Handle recording events
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.push(e.data);
       };
       mediaRecorder.onstop = () => {
+        // Cleanup
+        stream.getTracks().forEach((track) => track.stop());
+        audioSource.disconnect(audioDestination);
         document.body.removeChild(offscreenVideo);
         resolve(new Blob(chunks, { type: mimeType }));
       };
@@ -211,13 +227,19 @@ export async function recordAscii(
           animationId = requestAnimationFrame(render);
         })
         .catch((err) => {
+          // Cleanup
           if (animationId) cancelAnimationFrame(animationId);
+          stream.getTracks().forEach((track) => track.stop());
+          audioSource.disconnect(audioDestination);
           mediaRecorder.stop();
           document.body.removeChild(offscreenVideo);
           reject(err);
         });
       offscreenVideo.onerror = (err) => {
+        // Cleanup
         if (animationId) cancelAnimationFrame(animationId);
+        stream.getTracks().forEach((track) => track.stop());
+        audioSource.disconnect(audioDestination);
         mediaRecorder.stop();
         document.body.removeChild(offscreenVideo);
         reject(err);
@@ -225,6 +247,7 @@ export async function recordAscii(
     };
 
     offscreenVideo.onerror = (err) => {
+      audioSource.disconnect(audioDestination);
       offscreenVideo.remove();
       reject(err);
     };
