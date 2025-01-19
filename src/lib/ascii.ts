@@ -148,107 +148,89 @@ export async function recordAscii(
   mimeType: "video/webm" | "video/mp4",
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
+    const duration = video.duration;
+
     const audioContext = new AudioContext();
     const audioSource = audioContext.createMediaElementSource(video);
     const audioDestination = audioContext.createMediaStreamDestination();
-    const speakerDestination = audioContext.destination;
     audioSource.connect(audioDestination);
-    audioSource.connect(speakerDestination);
+    audioSource.connect(audioContext.destination);
 
-    const offscreenVideo = document.createElement("video");
-    offscreenVideo.src = video.src;
-    offscreenVideo.muted = true;
-    offscreenVideo.playsInline = true;
-    offscreenVideo.style.width = "0px";
-    offscreenVideo.style.height = "0px";
-    offscreenVideo.style.pointerEvents = "none";
-    document.body.appendChild(offscreenVideo);
+    // Create new canvases for rendering
+    const videoCanvas = document.createElement("canvas");
+    const asciiCanvas = document.createElement("canvas");
+    videoCanvas.width = video.videoWidth;
+    videoCanvas.height = video.videoHeight;
+    asciiCanvas.width = videoCanvas.width;
+    asciiCanvas.height = videoCanvas.height;
 
-    offscreenVideo.onloadedmetadata = () => {
-      // Create new canvases for offscreen rendering
-      const videoCanvas = document.createElement("canvas");
-      const asciiCanvas = document.createElement("canvas");
-      videoCanvas.width = offscreenVideo.videoWidth;
-      videoCanvas.height = offscreenVideo.videoHeight;
-      asciiCanvas.width = videoCanvas.width;
-      asciiCanvas.height = videoCanvas.height;
+    // Set up stream with both audio and video
+    const stream = new MediaStream();
+    const canvasStream = asciiCanvas.captureStream();
+    canvasStream.getTracks().forEach((track) => stream.addTrack(track));
+    audioDestination.stream
+      .getAudioTracks()
+      .forEach((track) => stream.addTrack(track));
 
-      const stream = new MediaStream();
-      const canvasStream = asciiCanvas.captureStream();
-      canvasStream.getTracks().forEach((track) => stream.addTrack(track));
-      audioDestination.stream.getAudioTracks().forEach((track) => {
-        stream.addTrack(track);
-      });
+    const videoCtx = videoCanvas.getContext("2d", { willReadFrequently: true });
+    const mediaRecorder = new MediaRecorder(stream, { mimeType });
+    const chunks: Blob[] = [];
+    let animationId: number;
 
-      // Recording state
-      const videoCtx = videoCanvas.getContext("2d", {
-        willReadFrequently: true,
-      });
-      const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: mimeType,
-      });
-      const chunks: Blob[] = [];
-      let animationId: number;
-
-      // Render loop
-      function render() {
-        if (offscreenVideo.ended || offscreenVideo.paused || !videoCtx) {
-          if (animationId) cancelAnimationFrame(animationId);
-          mediaRecorder.stop();
-          return;
-        }
-
-        if (animationId) cancelAnimationFrame(animationId);
-        videoCtx.drawImage(offscreenVideo, 0, 0);
-        renderAscii(videoCanvas, asciiCanvas, config);
-        animationId = requestAnimationFrame(render);
+    // Render loop
+    function render() {
+      if (
+        !videoCtx ||
+        video.currentTime >= duration ||
+        video.ended ||
+        video.paused
+      ) {
+        cancelAnimationFrame(animationId);
+        mediaRecorder.stop();
+        return;
       }
 
-      // Handle recording events
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        // Cleanup
-        stream.getTracks().forEach((track) => track.stop());
-        audioSource.disconnect(audioDestination);
-        document.body.removeChild(offscreenVideo);
-        resolve(new Blob(chunks, { type: mimeType }));
-      };
+      videoCtx.drawImage(video, 0, 0);
+      renderAscii(videoCanvas, asciiCanvas, config);
+      animationId = requestAnimationFrame(render);
+    }
 
-      // Start recording
-      offscreenVideo.currentTime = 0;
-      mediaRecorder.start();
+    mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) chunks.push(e.data);
+    };
+    mediaRecorder.onstop = () => {
+      // Cleanup
+      cancelAnimationFrame(animationId);
+      stream.getTracks().forEach((track) => track.stop());
+      audioSource.disconnect();
+      audioContext.close();
 
-      // Start playback and rendering
-      offscreenVideo
-        .play()
-        .then(() => {
-          animationId = requestAnimationFrame(render);
-        })
-        .catch((err) => {
-          // Cleanup
-          if (animationId) cancelAnimationFrame(animationId);
-          stream.getTracks().forEach((track) => track.stop());
-          audioSource.disconnect(audioDestination);
-          mediaRecorder.stop();
-          document.body.removeChild(offscreenVideo);
-          reject(err);
-        });
-      offscreenVideo.onerror = (err) => {
-        // Cleanup
-        if (animationId) cancelAnimationFrame(animationId);
-        stream.getTracks().forEach((track) => track.stop());
-        audioSource.disconnect(audioDestination);
-        mediaRecorder.stop();
-        document.body.removeChild(offscreenVideo);
-        reject(err);
-      };
+      resolve(new Blob(chunks, { type: mimeType }));
     };
 
-    offscreenVideo.onerror = (err) => {
-      audioSource.disconnect(audioDestination);
-      offscreenVideo.remove();
+    // Start recording
+    video.currentTime = 0;
+    mediaRecorder.start();
+
+    // Start playback and rendering
+    video
+      .play()
+      .then(() => {
+        animationId = requestAnimationFrame(render);
+      })
+      .catch((err) => {
+        // Cleanup
+        cancelAnimationFrame(animationId);
+        mediaRecorder.stop();
+
+        reject(err);
+      });
+
+    video.onerror = (err) => {
+      // Cleanup
+      cancelAnimationFrame(animationId);
+      mediaRecorder.stop();
+
       reject(err);
     };
   });

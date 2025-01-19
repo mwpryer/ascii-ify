@@ -95,11 +95,12 @@ export function UploadDisplay() {
           disabled={!hasUpload || !isAsciiActive}
         />
         <DisplayActionButton
-          onClick={() => {
+          onClick={async () => {
             if (videoRef.current) {
-              downloadAscii(videoRef.current);
+              await downloadAscii(videoRef.current);
+              clear();
             } else {
-              downloadAscii();
+              await downloadAscii();
             }
           }}
           icon={Download}
