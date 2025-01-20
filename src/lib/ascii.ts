@@ -148,8 +148,6 @@ export async function recordAscii(
   mimeType: "video/webm" | "video/mp4",
 ): Promise<Blob> {
   return new Promise((resolve, reject) => {
-    const duration = video.duration;
-
     const audioContext = new AudioContext();
     const audioSource = audioContext.createMediaElementSource(video);
     const audioDestination = audioContext.createMediaStreamDestination();
@@ -178,13 +176,13 @@ export async function recordAscii(
     let animationId: number;
 
     // Render loop
+    let prevTime = 0;
+    let hasFinished = false;
     function render() {
-      if (
-        !videoCtx ||
-        video.currentTime >= duration ||
-        video.ended ||
-        video.paused
-      ) {
+      if (video.currentTime < prevTime) hasFinished = true;
+      prevTime = video.currentTime;
+
+      if (!videoCtx || hasFinished || video.ended) {
         cancelAnimationFrame(animationId);
         mediaRecorder.stop();
         return;

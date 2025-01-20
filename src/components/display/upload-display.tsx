@@ -73,7 +73,7 @@ export function UploadDisplay() {
         <input
           ref={uploadInputRef}
           type="file"
-          accept="image/*,video/*"
+          accept="image/jpeg,image/png,video/*"
           className="hidden"
           onChange={(e) => {
             const file = e.target.files?.[0];

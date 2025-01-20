@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="grid h-12 w-full grid-cols-3 items-center justify-center">
+    <footer className="grid w-full grid-cols-3 items-center justify-center p-2">
       <span className="col-start-2 text-center text-xs uppercase text-muted-foreground/30">
         Made by{" "}
         <a

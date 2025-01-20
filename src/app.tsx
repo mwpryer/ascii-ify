@@ -15,7 +15,7 @@ export function App() {
   return (
     <div className="relative flex w-full overflow-hidden rounded-lg border bg-card md:h-[calc(480px+53px)] md:w-auto xl:h-[calc(480px*1.4+53px)]">
       {display === "webcam" ? <WebcamDisplay /> : <UploadDisplay />}
-      <Sidebar side="right">
+      <Sidebar side="right" className="h-full">
         <SidebarContent>
           <SidebarGroup>
             <Controls />
