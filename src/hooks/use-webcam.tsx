@@ -49,8 +49,13 @@ export function useWebcam() {
 
     setIsLoading(true);
     try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const webcam = devices.find((device) => device.kind === "videoinput");
+      if (!webcam) throw new Error("Webcam not found");
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
+          deviceId: { exact: webcam.deviceId },
           width: { ideal: 1280 },
           height: { ideal: 960 },
         },
