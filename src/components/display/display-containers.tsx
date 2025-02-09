@@ -3,6 +3,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { DisplayToggle } from "@/components/display/display-toggle";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DisplayFullscreenButton } from "@/components/display/display-fullscreen-button";
 
 type DisplayContainerProps = React.ComponentProps<"div">;
 export function DisplayContainer({ children }: DisplayContainerProps) {
@@ -28,7 +29,14 @@ type DisplayCanvasContainerProps = React.ComponentProps<"div">;
 export function DisplayCanvasContainer({
   children,
 }: DisplayCanvasContainerProps) {
-  return <div className="relative flex-1 overflow-hidden">{children}</div>;
+  return (
+    <div id="preview-container" className="relative flex-1 overflow-hidden">
+      {children}
+      <div className="absolute right-2 top-2 z-50">
+        <DisplayFullscreenButton containerId="preview-container" />
+      </div>
+    </div>
+  );
 }
 
 type DisplayInsetProps = React.ComponentProps<"div">;
