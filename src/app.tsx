@@ -6,23 +6,30 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarFooter,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { Footer } from "@/components/footer";
 
 export function App() {
   const { display } = useApp();
 
   return (
-    <div className="relative flex w-full overflow-hidden rounded-lg border bg-card md:h-[calc(480px+53px)] md:w-auto xl:h-[calc(480px*1.4+53px)]">
-      {display === "webcam" ? <WebcamDisplay /> : <UploadDisplay />}
-      <Sidebar side="right" className="h-full">
+    <div className="relative flex h-screen w-full overflow-hidden">
+      <Sidebar>
         <SidebarContent>
           <SidebarGroup>
             <Controls />
           </SidebarGroup>
         </SidebarContent>
+        <SidebarFooter>
+          <Footer />
+        </SidebarFooter>
         <SidebarRail />
       </Sidebar>
+      <div className="flex h-full flex-1">
+        {display === "webcam" ? <WebcamDisplay /> : <UploadDisplay />}
+      </div>
     </div>
   );
 }

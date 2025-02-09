@@ -56,7 +56,7 @@ function DisplayToggleTrigger({
       <Tooltip>
         <TabsTrigger
           value={value}
-          className="relative h-full w-10 lg:hidden"
+          className="relative h-full w-full lg:hidden"
           asChild
         >
           <TooltipTrigger className="absolute inset-0 grid place-items-center">

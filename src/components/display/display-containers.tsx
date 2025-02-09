@@ -6,7 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 type DisplayContainerProps = React.ComponentProps<"div">;
 export function DisplayContainer({ children }: DisplayContainerProps) {
-  return <div className="h-full w-full">{children}</div>;
+  return <div className="flex h-full w-full flex-col">{children}</div>;
 }
 
 type DisplayActionsContainerProps = React.ComponentProps<"div">;
@@ -14,10 +14,12 @@ export function DisplayActionsContainer({
   children,
 }: DisplayActionsContainerProps) {
   return (
-    <div className="grid grid-cols-[1fr,auto,1fr] items-center gap-2 bg-sidebar p-2">
-      <div className="flex gap-2">{children}</div>
+    <div className="grid grid-cols-[auto,1fr] items-center gap-2 border-b bg-sidebar p-2">
+      <div className="flex gap-2">
+        <SidebarTrigger />
+        {children}
+      </div>
       <DisplayToggle />
-      <SidebarTrigger className="place-self-end" />
     </div>
   );
 }
@@ -26,11 +28,7 @@ type DisplayCanvasContainerProps = React.ComponentProps<"div">;
 export function DisplayCanvasContainer({
   children,
 }: DisplayCanvasContainerProps) {
-  return (
-    <div className="relative aspect-[640/480] w-full overflow-hidden border-t md:h-[480px] md:min-w-[640px] xl:h-[calc(480px*1.4)] xl:min-w-[calc(640px*1.4)]">
-      {children}
-    </div>
-  );
+  return <div className="relative flex-1 overflow-hidden">{children}</div>;
 }
 
 type DisplayInsetProps = React.ComponentProps<"div">;
@@ -58,7 +56,10 @@ export const DisplayCanvas = React.forwardRef<
   DisplayCanvasProps
 >(({ className, ...props }, ref) => (
   <canvas
-    className={cn("absolute inset-0 w-full", className)}
+    className={cn(
+      "absolute left-1/2 top-1/2 max-h-full max-w-full -translate-x-1/2 -translate-y-1/2 object-contain",
+      className,
+    )}
     ref={ref}
     {...props}
   />
