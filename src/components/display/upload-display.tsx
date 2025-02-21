@@ -117,7 +117,7 @@ export function UploadDisplay() {
             onClick={() => uploadInputRef.current?.click()}
             disabled={isUploading}
           >
-            <Upload className="size-4 text-muted-foreground" />
+            <Upload className="size-4" />
             Upload
           </Button>
         </DisplayInset>

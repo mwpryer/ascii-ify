@@ -119,7 +119,7 @@ export function Controls() {
                     updateConfig({ outputWidth: width, outputHeight: height });
                     setAspectRatio(IDEAL_RATIO);
                   }}
-                  className="size-6 text-muted-foreground hover:text-foreground"
+                  className="size-6"
                 >
                   <ScanText className="!size-3.5" />
                 </Button>
@@ -132,7 +132,7 @@ export function Controls() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsAspectRatioLocked(!isAspectRatioLocked)}
-                  className="size-6 text-muted-foreground hover:text-foreground"
+                  className="size-6"
                 >
                   {isAspectRatioLocked ? (
                     <Lock className="!size-3.5" />
@@ -275,23 +275,21 @@ export function Controls() {
 
       <SidebarSeparator className="-ml-2 -mr-2" />
 
-      <div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            updateConfig(DEFAULT_ASCII_CONFIG);
-            setAspectRatio(
-              DEFAULT_ASCII_CONFIG.outputWidth /
-                DEFAULT_ASCII_CONFIG.outputHeight,
-            );
-          }}
-          className="w-full text-muted-foreground hover:text-foreground"
-        >
-          <RefreshCcw className="!size-3.5" />
-          Reset all settings
-        </Button>
-      </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          updateConfig(DEFAULT_ASCII_CONFIG);
+          setAspectRatio(
+            DEFAULT_ASCII_CONFIG.outputWidth /
+              DEFAULT_ASCII_CONFIG.outputHeight,
+          );
+        }}
+        className="mb-2 w-full"
+      >
+        <RefreshCcw className="!size-3.5" />
+        Reset all settings
+      </Button>
     </div>
   );
 }

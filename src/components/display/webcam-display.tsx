@@ -91,7 +91,7 @@ export function WebcamDisplay() {
             onClick={startWebcam}
             disabled={isWebcamLoading}
           >
-            <Camera className="size-4 text-muted-foreground" />
+            <Camera className="size-4" />
             Start
           </Button>
         </DisplayInset>

@@ -70,7 +70,7 @@ function DisplayToggleTrigger({
 
   return (
     <TabsTrigger value={value} className="hidden space-x-2 lg:inline-flex">
-      <Icon className="size-3.5 lg:text-muted-foreground" />
+      <Icon className="size-3.5" />
       <span>{label}</span>
     </TabsTrigger>
   );
