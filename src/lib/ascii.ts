@@ -5,6 +5,7 @@ export const ASCII_CONSTRAINTS = {
 };
 export const ASCII_CHAR_PRESETS = [
   "@%#*+=-:. ",
+  "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ",
   "01",
   "█▓▒░ ",
   "█▇▆▅▄▃▂▁ ",
@@ -25,6 +26,8 @@ export interface AsciiConfig {
   fontSize: number;
   colour: string;
   animate: boolean;
+  contrast: number;
+  brightness: number;
 }
 export const DEFAULT_ASCII_CONFIG: AsciiConfig = {
   outputWidth: 100,
@@ -34,10 +37,24 @@ export const DEFAULT_ASCII_CONFIG: AsciiConfig = {
   fontSize: 14,
   colour: ASCII_COLOUR_PRESETS[1],
   animate: true,
+  contrast: 1,
+  brightness: 0,
 };
 
+function adjustPixel(
+  value: number,
+  contrast: number,
+  brightness: number,
+): number {
+  // Apply contrast
+  let adjusted = ((value / 255 - 0.5) * contrast + 0.5) * 255;
+  // Apply brightness
+  adjusted += brightness * 255;
+  return Math.max(0, Math.min(255, adjusted));
+}
+
 export function generateAscii(data: ImageData, config: AsciiConfig) {
-  const { outputWidth, outputHeight, chars } = config;
+  const { outputWidth, outputHeight, chars, contrast, brightness } = config;
   const { width: sourceWidth, height: sourceHeight, data: pixels } = data;
   const ascii = new Array(outputHeight)
     .fill(null)
@@ -79,9 +96,9 @@ export function generateAscii(data: ImageData, config: AsciiConfig) {
       }
 
       if (count > 0) {
-        r /= count;
-        g /= count;
-        b /= count;
+        r = adjustPixel(r / count, contrast, brightness);
+        g = adjustPixel(g / count, contrast, brightness);
+        b = adjustPixel(b / count, contrast, brightness);
       }
 
       // ITU-R BT.709 coefficients for perceived brightness
@@ -89,7 +106,9 @@ export function generateAscii(data: ImageData, config: AsciiConfig) {
       const idx = Math.round((luminance / 255) * (chars.length - 1));
       ascii[row][col] = {
         char: charsArr[idx] ?? " ",
-        colour: config.colour || `rgb(${r},${g},${b})`,
+        colour:
+          config.colour ||
+          `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`,
       };
     }
   }

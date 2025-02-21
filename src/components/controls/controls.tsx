@@ -1,4 +1,10 @@
-import { ArrowLeftRight, Lock, RefreshCcw, Unlock } from "lucide-react";
+import {
+  ArrowLeftRight,
+  Lock,
+  RefreshCcw,
+  ScanText,
+  Unlock,
+} from "lucide-react";
 import { useState } from "react";
 
 import { useApp } from "@/context/app-context";
@@ -27,6 +33,24 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+const IDEAL_RATIO = 2.5;
+function calculateIdealDimensions(currentWidth: number, currentHeight: number) {
+  const currentArea = currentWidth * currentHeight;
+  const newWidth = Math.round(Math.sqrt(currentArea * IDEAL_RATIO));
+  const newHeight = Math.round(newWidth / IDEAL_RATIO);
+
+  return {
+    width: Math.min(
+      Math.max(newWidth, ASCII_CONSTRAINTS.OUTPUT_WIDTH.MIN),
+      ASCII_CONSTRAINTS.OUTPUT_WIDTH.MAX,
+    ),
+    height: Math.min(
+      Math.max(newHeight, ASCII_CONSTRAINTS.OUTPUT_HEIGHT.MIN),
+      ASCII_CONSTRAINTS.OUTPUT_HEIGHT.MAX,
+    ),
+  };
+}
 
 export function Controls() {
   const { config, updateConfig } = useApp();
@@ -71,54 +95,57 @@ export function Controls() {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="mb-1 flex items-center gap-2">
-        <h2 className="text-sm font-semibold uppercase text-foreground">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center pt-2">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">
           Controls
         </h2>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                updateConfig(DEFAULT_ASCII_CONFIG);
-                setAspectRatio(
-                  DEFAULT_ASCII_CONFIG.outputWidth /
-                    DEFAULT_ASCII_CONFIG.outputHeight,
-                );
-              }}
-              className="size-6 text-muted-foreground"
-            >
-              <RefreshCcw className="!size-3.5" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Reset</TooltipContent>
-        </Tooltip>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="mb-1 flex items-center gap-2">
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
           <ControlsHeadingLabel>Resolution</ControlsHeadingLabel>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsAspectRatioLocked(!isAspectRatioLocked)}
-                className="size-6 text-muted-foreground"
-              >
-                {isAspectRatioLocked ? (
-                  <Lock className="!size-3.5" />
-                ) : (
-                  <Unlock className="!size-3.5" />
-                )}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {isAspectRatioLocked ? "Unlock Ratio" : "Lock Ratio"}
-            </TooltipContent>
-          </Tooltip>
+          <div className="flex gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    const { width, height } = calculateIdealDimensions(
+                      config.outputWidth,
+                      config.outputHeight,
+                    );
+                    updateConfig({ outputWidth: width, outputHeight: height });
+                    setAspectRatio(IDEAL_RATIO);
+                  }}
+                  className="size-6 text-muted-foreground hover:text-foreground"
+                >
+                  <ScanText className="!size-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Optimize for copy/paste</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsAspectRatioLocked(!isAspectRatioLocked)}
+                  className="size-6 text-muted-foreground hover:text-foreground"
+                >
+                  {isAspectRatioLocked ? (
+                    <Lock className="!size-3.5" />
+                  ) : (
+                    <Unlock className="!size-3.5" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isAspectRatioLocked ? "Unlock Ratio" : "Lock Ratio"}
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
 
         <div className="flex flex-col">
@@ -144,8 +171,8 @@ export function Controls() {
 
       <SidebarSeparator className="-ml-2 -mr-2" />
 
-      <div className="flex flex-col gap-2">
-        <ControlsHeadingLabel className="mb-1">Characters</ControlsHeadingLabel>
+      <div className="flex flex-col gap-4">
+        <ControlsHeadingLabel>Characters</ControlsHeadingLabel>
 
         <div className="flex flex-col gap-1.5">
           <ControlLabel>Preset</ControlLabel>
@@ -198,8 +225,8 @@ export function Controls() {
 
       <SidebarSeparator className="-ml-2 -mr-2" />
 
-      <div className="flex flex-col gap-2">
-        <ControlsHeadingLabel className="mb-1">Font</ControlsHeadingLabel>
+      <div className="flex flex-col gap-4">
+        <ControlsHeadingLabel>Font</ControlsHeadingLabel>
 
         <div className="flex flex-col">
           <ControlLabel>Size (px)</ControlLabel>
@@ -218,6 +245,52 @@ export function Controls() {
             onChange={(colour) => updateConfig({ colour })}
           />
         </div>
+      </div>
+
+      <SidebarSeparator className="-ml-2 -mr-2" />
+
+      <div className="flex flex-col gap-4">
+        <ControlsHeadingLabel>Image Adjustments</ControlsHeadingLabel>
+
+        <div className="flex flex-col">
+          <ControlLabel>Contrast</ControlLabel>
+          <ControlsNumberSlider
+            value={config.contrast * 100}
+            onValueChange={(value) => updateConfig({ contrast: value / 100 })}
+            min={0}
+            max={200}
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <ControlLabel>Brightness</ControlLabel>
+          <ControlsNumberSlider
+            value={config.brightness * 100}
+            onValueChange={(value) => updateConfig({ brightness: value / 100 })}
+            min={-100}
+            max={100}
+          />
+        </div>
+      </div>
+
+      <SidebarSeparator className="-ml-2 -mr-2" />
+
+      <div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            updateConfig(DEFAULT_ASCII_CONFIG);
+            setAspectRatio(
+              DEFAULT_ASCII_CONFIG.outputWidth /
+                DEFAULT_ASCII_CONFIG.outputHeight,
+            );
+          }}
+          className="w-full text-muted-foreground hover:text-foreground"
+        >
+          <RefreshCcw className="!size-3.5" />
+          Reset all settings
+        </Button>
       </div>
     </div>
   );

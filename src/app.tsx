@@ -22,7 +22,7 @@ export function App() {
             <Controls />
           </SidebarGroup>
         </SidebarContent>
-        <SidebarFooter>
+        <SidebarFooter className="border-t py-2.5">
           <Footer />
         </SidebarFooter>
         <SidebarRail />
