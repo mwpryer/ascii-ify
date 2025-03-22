@@ -253,7 +253,7 @@ export function Controls() {
         <ControlsHeadingLabel>Image Adjustments</ControlsHeadingLabel>
 
         <div className="flex flex-col">
-          <ControlLabel>Contrast</ControlLabel>
+          <ControlLabel>Contrast (%)</ControlLabel>
           <ControlsNumberSlider
             value={config.contrast * 100}
             onValueChange={(value) => updateConfig({ contrast: value / 100 })}

@@ -11,6 +11,7 @@ import {
   DisplayCanvasContainer,
   DisplayContainer,
   DisplayInset,
+  ZoomContainer,
 } from "@/components/display/display-containers";
 import { DisplayCopyButton } from "@/components/display/display-copy-button";
 import { Button } from "@/components/ui/button";
@@ -96,14 +97,16 @@ export function WebcamDisplay() {
           </Button>
         </DisplayInset>
 
-        <DisplayCanvas
-          ref={webcamCanvasRef}
-          className={cn({ hidden: isAsciiActive })}
-        />
-        <DisplayCanvas
-          ref={asciiCanvasRef}
-          className={cn({ hidden: !isAsciiActive })}
-        />
+        <ZoomContainer disableZoom={!isWebcamActive}>
+          <DisplayCanvas
+            ref={webcamCanvasRef}
+            className={cn({ hidden: isAsciiActive })}
+          />
+          <DisplayCanvas
+            ref={asciiCanvasRef}
+            className={cn({ hidden: !isAsciiActive })}
+          />
+        </ZoomContainer>
       </DisplayCanvasContainer>
     </DisplayContainer>
   );

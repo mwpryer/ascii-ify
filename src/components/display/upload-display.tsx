@@ -12,6 +12,7 @@ import {
   DisplayCanvasContainer,
   DisplayContainer,
   DisplayInset,
+  ZoomContainer,
 } from "@/components/display/display-containers";
 import { DisplayCopyButton } from "@/components/display/display-copy-button";
 import { Button } from "@/components/ui/button";
@@ -122,7 +123,7 @@ export function UploadDisplay() {
           </Button>
         </DisplayInset>
 
-        <div className="absolute inset-0 overflow-auto">
+        <ZoomContainer disableZoom={!hasUpload}>
           <DisplayCanvas
             ref={uploadCanvasRef}
             className={cn("w-auto", { hidden: isAsciiActive })}
@@ -131,7 +132,7 @@ export function UploadDisplay() {
             ref={asciiCanvasRef}
             className={cn("w-auto", { hidden: !isAsciiActive })}
           />
-        </div>
+        </ZoomContainer>
       </DisplayCanvasContainer>
     </DisplayContainer>
   );
