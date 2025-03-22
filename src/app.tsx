@@ -16,7 +16,7 @@ export function App() {
 
   return (
     <div className="relative flex h-screen w-full overflow-hidden">
-      <Sidebar>
+      <Sidebar className="z-20">
         <SidebarContent>
           <SidebarGroup>
             <Controls />

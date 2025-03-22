@@ -2,8 +2,8 @@ import { buttonVariants } from "@/components/ui/button";
 
 export function Footer() {
   return (
-    <footer className="flex items-end justify-between gap-2 p-1">
-      <span className="text-xs uppercase text-muted-foreground/30">
+    <footer className="flex items-center justify-between gap-2">
+      <span className="text-xs uppercase text-muted-foreground/60">
         Made by{" "}
         <a
           href="https://mattpryer.com"
@@ -21,7 +21,7 @@ export function Footer() {
         className={buttonVariants({
           variant: "ghost",
           size: "icon",
-          className: "absolute bottom-1 right-1 text-muted-foreground",
+          className: "!size-8 text-muted-foreground",
         })}
       >
         <svg

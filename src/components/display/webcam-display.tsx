@@ -80,7 +80,7 @@ export function WebcamDisplay() {
         <DisplayActionButton
           onClick={() => downloadAscii()}
           icon={Download}
-          tooltip="Download ASCII"
+          tooltip="Download PNG"
           disabled={!isWebcamActive || !isAsciiActive}
         />
       </DisplayActionsContainer>

@@ -105,7 +105,7 @@ export function UploadDisplay() {
             }
           }}
           icon={Download}
-          tooltip="Download ASCII"
+          tooltip={type === "video" ? "Download Video" : "Download PNG"}
           disabled={!hasUpload || !isAsciiActive}
           loading={isAsciiDownloading}
         />

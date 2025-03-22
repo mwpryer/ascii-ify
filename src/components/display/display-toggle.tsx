@@ -54,11 +54,7 @@ function DisplayToggleTrigger({
   if (isMobile) {
     return (
       <Tooltip>
-        <TabsTrigger
-          value={value}
-          className="relative h-full w-full lg:hidden"
-          asChild
-        >
+        <TabsTrigger value={value} className="relative h-full" asChild>
           <TooltipTrigger className="absolute inset-0 grid place-items-center">
             <Icon className="size-3.5" />
           </TooltipTrigger>
@@ -69,8 +65,8 @@ function DisplayToggleTrigger({
   }
 
   return (
-    <TabsTrigger value={value} className="hidden space-x-2 lg:inline-flex">
-      <Icon className="size-3.5" />
+    <TabsTrigger value={value} className="space-x-2">
+      <Icon className="-ml-0.5 size-3.5" />
       <span>{label}</span>
     </TabsTrigger>
   );

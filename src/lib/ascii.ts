@@ -4,12 +4,16 @@ export const ASCII_CONSTRAINTS = {
   FONT_SIZE: { MIN: 1, MAX: 32 },
 };
 export const ASCII_CHAR_PRESETS = [
-  "@%#*+=-:. ",
-  "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ",
-  "01",
-  "█▓▒░ ",
-  "█▇▆▅▄▃▂▁ ",
-  "→↗↑↖←↙↓↘ ",
+  { name: "Basic", value: "@%#*+=-:. " },
+  {
+    name: "Detailed",
+    value:
+      "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. ",
+  },
+  { name: "Binary", value: "01" },
+  { name: "Shades", value: "█▓▒░ " },
+  { name: "Blocks", value: "█▇▆▅▄▃▂▁ " },
+  { name: "Arrows", value: "→↗↑↖←↙↓↘ " },
 ];
 export const ASCII_COLOUR_PRESETS = [
   "#FFFFFF",
@@ -32,7 +36,7 @@ export interface AsciiConfig {
 export const DEFAULT_ASCII_CONFIG: AsciiConfig = {
   outputWidth: 100,
   outputHeight: 75,
-  chars: ASCII_CHAR_PRESETS[0],
+  chars: ASCII_CHAR_PRESETS[0].value,
   fontFamily: "monospace",
   fontSize: 14,
   colour: ASCII_COLOUR_PRESETS[1],

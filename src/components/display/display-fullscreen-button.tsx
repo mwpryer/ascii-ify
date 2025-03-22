@@ -42,6 +42,7 @@ export function DisplayFullscreenButton({
 
   return (
     <DisplayActionButton
+      variant="ghost"
       icon={isFullscreen ? Minimize2 : Maximize2}
       onClick={toggleFullscreen}
       disabled={disabled}

@@ -7,6 +7,11 @@ import { DisplayToggle } from "@/components/display/display-toggle";
 import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Slider } from "@/components/ui/slider";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type DisplayContainerProps = React.ComponentProps<"div">;
 export function DisplayContainer({ children }: DisplayContainerProps) {
@@ -18,12 +23,17 @@ export function DisplayActionsContainer({
   children,
 }: DisplayActionsContainerProps) {
   return (
-    <div className="grid grid-cols-[auto,1fr] items-center gap-2 border-b bg-sidebar p-2">
+    <div className="relative flex items-center gap-2 border-b bg-sidebar p-2">
       <div className="flex gap-2">
         <SidebarTrigger />
         {children}
       </div>
-      <DisplayToggle />
+      <div className="absolute left-0 right-0 mx-auto hidden w-fit lg:block">
+        <DisplayToggle />
+      </div>
+      <div className="ml-auto lg:hidden">
+        <DisplayToggle />
+      </div>
     </div>
   );
 }
@@ -33,10 +43,16 @@ export function DisplayCanvasContainer({
   children,
 }: DisplayCanvasContainerProps) {
   return (
-    <div id="preview-container" className="relative flex-1 overflow-hidden">
+    <div
+      id="preview-container"
+      className="group relative flex-1 overflow-hidden bg-black"
+    >
       {children}
-      <div className="absolute right-2 top-2 z-[100]">
-        <DisplayFullscreenButton containerId="preview-container" />
+      <div className="absolute right-2 top-2 z-10">
+        <DisplayFullscreenButton
+          containerId="preview-container"
+          className="pointer-events-none opacity-0 transition-opacity duration-100 group-hover:pointer-events-auto group-hover:opacity-100"
+        />
       </div>
     </div>
   );
@@ -76,6 +92,8 @@ export const DisplayCanvas = React.forwardRef<
   />
 ));
 
+const ZOOM_CONTROLS_TIMEOUT = 2000;
+
 type ZoomContainerProps = React.ComponentProps<"div"> & {
   disableZoom?: boolean;
 };
@@ -95,33 +113,34 @@ export function ZoomContainer({
     setZoom(1);
     setPan({ x: 0, y: 0 });
     setIsInteracting(true);
+
     if (hideTimeout.current) {
       clearTimeout(hideTimeout.current);
     }
+
     hideTimeout.current = setTimeout(() => {
       setIsInteracting(false);
-    }, 2000);
+    }, ZOOM_CONTROLS_TIMEOUT);
   }, []);
 
   const handleWheel = useCallback(
     (e: React.WheelEvent) => {
       if (disableZoom) return;
 
-      // Adjusted sensitivity
       const delta = e.deltaY * -0.003;
       setZoom((prev) => {
         const newZoom = Math.min(Math.max(0.1, prev + delta), 5);
         return Number(newZoom.toFixed(2));
       });
 
-      // Show controls when scrolling
       setIsInteracting(true);
       if (hideTimeout.current) {
         clearTimeout(hideTimeout.current);
       }
+
       hideTimeout.current = setTimeout(() => {
         setIsInteracting(false);
-      }, 2000);
+      }, ZOOM_CONTROLS_TIMEOUT);
     },
     [disableZoom],
   );
@@ -140,6 +159,11 @@ export function ZoomContainer({
       if (e.button === 0) {
         setIsDragging(true);
         setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
+
+        setIsInteracting(true);
+        if (hideTimeout.current) {
+          clearTimeout(hideTimeout.current);
+        }
       }
     },
     [pan, disableZoom],
@@ -159,6 +183,13 @@ export function ZoomContainer({
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
+    if (hideTimeout.current) {
+      clearTimeout(hideTimeout.current);
+    }
+
+    hideTimeout.current = setTimeout(() => {
+      setIsInteracting(false);
+    }, ZOOM_CONTROLS_TIMEOUT);
   }, []);
 
   useEffect(() => {
@@ -231,21 +262,30 @@ export function ZoomSlider({
   return (
     <div
       className={cn(
-        "absolute bottom-4 left-1/2 z-[100] flex -translate-x-1/2 items-center gap-2 rounded-lg bg-background/80 p-2 backdrop-blur transition-opacity duration-300",
-        isInteracting
-          ? "opacity-100"
-          : "pointer-events-none opacity-0 hover:pointer-events-auto hover:opacity-100",
+        "absolute left-1/2 top-4 z-50 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-background/80 p-2 backdrop-blur transition-opacity duration-100",
+        {
+          "opacity-100": isInteracting,
+          "pointer-events-none opacity-0 hover:pointer-events-auto hover:opacity-100":
+            !isInteracting,
+        },
       )}
       {...props}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-8"
-        onClick={() => setZoom((prev) => Math.max(0.1, prev - 0.1))}
-      >
-        <ZoomOut className="size-4" />
-      </Button>
+      <Tooltip delayDuration={600}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setZoom((prev) => Math.max(0.1, prev - 0.1))}
+            disabled={zoom <= 0.1}
+            className="size-8"
+          >
+            <ZoomOut />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Zoom out</TooltipContent>
+      </Tooltip>
+
       <Slider
         value={[zoom]}
         min={0.1}
@@ -254,24 +294,35 @@ export function ZoomSlider({
         onValueChange={handleZoomChange}
         className="w-32"
       />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-8"
-        onClick={() => setZoom((prev) => Math.min(5, prev + 0.1))}
-      >
-        <ZoomIn className="size-4" />
-      </Button>
-      <div className="mx-2 h-8 w-px bg-border" />
-      <Button
-        variant="ghost"
-        size="icon"
-        className="size-8"
-        onClick={resetView}
-        title="Reset view"
-      >
-        <RotateCcw className="size-4" />
-      </Button>
+
+      <Tooltip delayDuration={600}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="size-8"
+            onClick={() => setZoom((prev) => Math.min(5, prev + 0.1))}
+            disabled={zoom >= 5}
+          >
+            <ZoomIn />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Zoom in</TooltipContent>
+      </Tooltip>
+
+      <Tooltip delayDuration={600}>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={resetView}
+            className="size-8"
+          >
+            <RotateCcw />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>Reset view</TooltipContent>
+      </Tooltip>
     </div>
   );
 }

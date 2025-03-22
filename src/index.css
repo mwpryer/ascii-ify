@@ -67,3 +67,26 @@
 .react-colorful__hue {
   @apply !rounded-b-sm;
 }
+
+.glitch-text:is(:hover, :focus-visible) > span:not(.sr-only)::after,
+.glitch-effect-parent:is(:hover, :focus-visible)
+  .glitch-text
+  > span:not(.sr-only)::after {
+  animation: flash 0.25s calc(var(--index, 0) * 0.05s) steps(1, end);
+}
+
+@keyframes flash {
+  0%,
+  20% {
+    content: "_";
+  }
+  40% {
+    content: var(--char-1);
+  }
+  60% {
+    content: var(--char-2);
+  }
+  80% {
+    content: var(--char-3);
+  }
+}

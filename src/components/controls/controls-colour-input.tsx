@@ -43,7 +43,7 @@ interface ColourInfoProps {
 }
 function ColourInfo({ colour }: ColourInfoProps) {
   return (
-    <div className="flex items-center gap-4">
+    <div className="grid grid-cols-[2fr_3fr] gap-2">
       <div className="flex flex-col gap-1">
         <ControlsHeadingLabel>Hex</ControlsHeadingLabel>
         <span className="text-xs">{colour || "-"}</span>
@@ -121,7 +121,7 @@ function ColourPicker({ colour, onChange }: ColourPickerProps) {
         <Button
           variant="outline"
           size="icon"
-          className={cn("rounded-r-none border-r-0", {
+          className={cn("rounded-r-none border-r-0 focus:z-10 focus:border-r", {
             "bg-gradient-to-bl from-gray-600 to-gray-800": !colour,
           })}
           style={{ backgroundColor: colour }}
@@ -157,7 +157,7 @@ export function ColourInput({ colour, onChange }: ColourInputProps) {
         color={colour}
         onChange={handleChange}
         placeholder="Using source"
-        className={cn(inputVariants(), "flex-1 rounded-l-none")}
+        className={cn(inputVariants(), "flex-1 rounded-l-none focus:z-10")}
       />
       <Button
         variant="ghost"

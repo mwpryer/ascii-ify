@@ -96,10 +96,29 @@ export function Controls() {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex items-center pt-2">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-foreground">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
           Controls
         </h2>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                updateConfig(DEFAULT_ASCII_CONFIG);
+                setAspectRatio(
+                  DEFAULT_ASCII_CONFIG.outputWidth /
+                    DEFAULT_ASCII_CONFIG.outputHeight,
+                );
+              }}
+              className="size-6"
+            >
+              <RefreshCcw className="!size-3.5" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Reset settings</TooltipContent>
+        </Tooltip>
       </div>
 
       <div className="flex flex-col gap-4">
@@ -124,7 +143,7 @@ export function Controls() {
                   <ScanText className="!size-3.5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Optimize for copy/paste</TooltipContent>
+              <TooltipContent>Optimise for copy</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -178,7 +197,9 @@ export function Controls() {
           <ControlLabel>Preset</ControlLabel>
           <Select
             value={
-              ASCII_CHAR_PRESETS.includes(config.chars) ? config.chars : ""
+              ASCII_CHAR_PRESETS.some((preset) => preset.value === config.chars)
+                ? config.chars
+                : ""
             }
             onValueChange={(value) => updateConfig({ chars: value })}
           >
@@ -187,8 +208,8 @@ export function Controls() {
             </SelectTrigger>
             <SelectContent>
               {ASCII_CHAR_PRESETS.map((preset) => (
-                <SelectItem key={preset} value={preset}>
-                  {preset}
+                <SelectItem key={preset.value} value={preset.value}>
+                  {preset.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -272,24 +293,6 @@ export function Controls() {
           />
         </div>
       </div>
-
-      <SidebarSeparator className="-ml-2 -mr-2" />
-
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => {
-          updateConfig(DEFAULT_ASCII_CONFIG);
-          setAspectRatio(
-            DEFAULT_ASCII_CONFIG.outputWidth /
-              DEFAULT_ASCII_CONFIG.outputHeight,
-          );
-        }}
-        className="mb-2 w-full"
-      >
-        <RefreshCcw className="!size-3.5" />
-        Reset all settings
-      </Button>
     </div>
   );
 }
