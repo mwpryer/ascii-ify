@@ -1,6 +1,6 @@
 # ASCII-ify
 
-Convert webcam feeds, images, or videos into ASCII art directly in your browser. Try it out [here](https://mwpryer.github.io/ascii-ify/).
+Convert images, videos, or webcam feeds into ASCII directly in your browser. Try it out [here](https://mwpryer.github.io/ascii-ify/).
 
 <div align="center">
   <img src="examples/original.gif" alt="Original" width="400">
@@ -9,18 +9,20 @@ Convert webcam feeds, images, or videos into ASCII art directly in your browser.
 
 ## Features
 
-Transform media into ASCII art in real-time using your webcam or uploaded files. Key features include:
+Key features include:
 
-- Real-time webcam feed conversion
 - Support for image and video file uploads
+- Real-time webcam feed conversion
 - Customisable output dimensions, character sets, and colours
 - Copy ASCII to clipboard or download it as a PNG or MP4/WebM
+- Tweak image brightness and contrast
+- Zoom and pan controls
 
 ## How It Works
 
 ### ASCII Conversion
 
-The core algorithm transforms visual media into ASCII art through the following steps:
+The core algorithm transforms visual media into ASCII through the following steps:
 
 1. **Pixel Sampling**: For each ASCII character position, a grid of pixels is sampled from the source image or video. Within each region, RGB values are averaged to determine overall brightness. A stride pattern optimises performance by sampling fewer pixels in larger regions.
 
@@ -30,16 +32,14 @@ The core algorithm transforms visual media into ASCII art through the following 
    L = (R \cdot 0.2126) + (G \cdot 0.7152) + (B \cdot 0.0722) \quad \text{where } R,G,B \in [0,1]
    ```
 
-3. **Character Mapping**: The luminance value (0-255) is mapped to an index in the selected character set. Higher luminance values correspond to denser characters (like `@` or `#`), while lower values correspond to sparser characters (like spaces or dots).
+3. **Character Mapping**: The luminance value (0-255) is mapped to an index in the character set. Higher luminance values correspond to denser characters (like `@` or `#`), while lower values correspond to sparser characters (like spaces or dots).
 
 ### Technologies
 
-The application is built using React with a focus on modular components and custom hooks. State management is handled via React Context.
+The application is built using React with Vite. State management is handled via React Context. Conversion logic is abstracted into custom hooks:
 
-Custom hooks abstract the core application logic:
-
+- `useUpload`: Handles file and URL uploads and previews
 - `useWebcam`: Manages webcam streams and previews
-- `useUpload`: Handles file uploads and previews
 - `useAscii`: Implements the core ASCII conversion logic and output
 
 ## Resources

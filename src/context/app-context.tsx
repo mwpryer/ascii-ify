@@ -16,7 +16,7 @@ type AppContextType = {
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [display, setDisplay] = useState<DisplayType>("webcam");
+  const [display, setDisplay] = useState<DisplayType>("upload");
   const [config, setConfig] = useState(DEFAULT_ASCII_CONFIG);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
 

@@ -21,16 +21,16 @@ export function DisplayToggle(props: DisplayToggleProps) {
     >
       <TabsList className="grid grid-cols-2">
         <DisplayToggleTrigger
-          value="webcam"
-          icon={Camera}
-          label="Webcam"
-          tooltip="Use Webcam"
-        />
-        <DisplayToggleTrigger
           value="upload"
           icon={Upload}
           label="Upload"
           tooltip="Use Upload"
+        />
+        <DisplayToggleTrigger
+          value="webcam"
+          icon={Camera}
+          label="Webcam"
+          tooltip="Use Webcam"
         />
       </TabsList>
     </Tabs>

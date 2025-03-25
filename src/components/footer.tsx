@@ -3,17 +3,14 @@ import { buttonVariants } from "@/components/ui/button";
 export function Footer() {
   return (
     <footer className="flex items-center justify-between gap-2">
-      <span className="text-xs uppercase text-muted-foreground/60">
-        Made by{" "}
-        <a
-          href="https://mattpryer.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-medium"
-        >
-          Matt Pryer
-        </a>
-      </span>
+      <a
+        href="https://mattpryer.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs uppercase text-muted-foreground"
+      >
+        Matt Pryer
+      </a>
       <a
         href="https://github.com/mwpryer/ascii-ify"
         target="_blank"

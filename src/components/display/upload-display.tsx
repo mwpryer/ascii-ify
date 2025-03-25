@@ -24,6 +24,7 @@ export function UploadDisplay() {
   const { config } = useApp();
   const {
     isUploading,
+    error,
     hasUpload,
     type,
     inputRef: uploadInputRef,
@@ -46,16 +47,24 @@ export function UploadDisplay() {
     animate: type === "video",
   });
   const initialised = useRef(false);
+  const rendered = useRef(false);
   const [url, setUrl] = useState("");
 
   useEffect(() => {
+    if (!initialised.current) {
+      uploadUrl("https://avatars.githubusercontent.com/u/81967541");
+      initialised.current = true;
+    }
+  }, [uploadUrl]);
+
+  useEffect(() => {
     if (hasUpload) {
-      if (!initialised.current) {
+      if (!rendered.current) {
         showAscii();
-        initialised.current = true;
+        rendered.current = true;
       }
     } else {
-      initialised.current = false;
+      rendered.current = false;
     }
   }, [hasUpload, showAscii]);
 
@@ -126,15 +135,20 @@ export function UploadDisplay() {
 
       <DisplayCanvasContainer>
         <DisplayInset className={cn({ hidden: hasUpload })}>
-          <div className="flex w-full max-w-sm flex-col items-center gap-6">
-            <Button
-              variant="outline"
-              onClick={() => uploadInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              <Upload className="size-4" />
-              Upload
-            </Button>
+          <div className="flex w-full max-w-md flex-col items-center gap-6">
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => uploadInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                <Upload className="size-4" />
+                Upload
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                (JPG, PNG, MP4, WebM, MOV)
+              </p>
+            </div>
 
             <div className="flex w-full items-center">
               <Separator className="flex-1" />
@@ -165,6 +179,12 @@ export function UploadDisplay() {
                 </Button>
               </div>
             </form>
+
+            {error && (
+              <p className="text-center text-xs leading-normal text-red-500">
+                {error}
+              </p>
+            )}
           </div>
         </DisplayInset>
 

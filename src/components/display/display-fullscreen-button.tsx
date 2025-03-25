@@ -46,7 +46,6 @@ export function DisplayFullscreenButton({
       icon={isFullscreen ? Minimize2 : Maximize2}
       onClick={toggleFullscreen}
       disabled={disabled}
-      tooltip={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
       {...props}
     />
   );

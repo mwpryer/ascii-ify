@@ -262,7 +262,7 @@ export function ZoomSlider({
   return (
     <div
       className={cn(
-        "absolute left-1/2 top-4 z-50 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-background/80 p-2 backdrop-blur transition-opacity duration-100",
+        "absolute left-1/2 top-2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-lg bg-background/80 p-2 backdrop-blur transition-opacity duration-100",
         {
           "opacity-100": isInteracting,
           "pointer-events-none opacity-0 hover:pointer-events-auto hover:opacity-100":

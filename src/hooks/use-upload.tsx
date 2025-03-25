@@ -4,6 +4,7 @@ type UploadType = "image" | "video" | null;
 
 export function useUpload() {
   const [isUploading, setIsUploading] = useState(false);
+  const [error, setError] = useState("");
   const [hasUpload, setHasUpload] = useState(false);
   const [type, setType] = useState<UploadType>(null);
   const imageRef = useRef<HTMLImageElement | null>(null);
@@ -70,6 +71,7 @@ export function useUpload() {
   async function uploadFile(file: File) {
     if (isUploading || hasUpload) return;
     setIsUploading(true);
+    setError("");
     clear();
 
     try {
@@ -81,6 +83,7 @@ export function useUpload() {
 
       setHasUpload(true);
     } catch {
+      setError("Failed to load file. Please try another.");
       clear();
     } finally {
       setIsUploading(false);
@@ -90,6 +93,7 @@ export function useUpload() {
   async function uploadUrl(url: string) {
     if (isUploading || hasUpload) return;
     setIsUploading(true);
+    setError("");
     clear();
 
     try {
@@ -101,6 +105,7 @@ export function useUpload() {
 
       setHasUpload(true);
     } catch {
+      setError("Failed to load from URL. Please check the URL and try again.");
       clear();
     } finally {
       setIsUploading(false);
@@ -189,6 +194,7 @@ export function useUpload() {
 
   return {
     isUploading,
+    error,
     hasUpload,
     type,
     inputRef,
