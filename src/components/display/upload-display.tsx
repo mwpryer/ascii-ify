@@ -127,14 +127,19 @@ export function UploadDisplay() {
       <DisplayCanvasContainer>
         <DisplayInset className={cn({ hidden: hasUpload })}>
           <div className="flex w-full max-w-sm flex-col items-center gap-6">
-            <Button
-              variant="outline"
-              onClick={() => uploadInputRef.current?.click()}
-              disabled={isUploading}
-            >
-              <Upload className="size-4" />
-              Upload
-            </Button>
+            <div className="flex flex-col items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => uploadInputRef.current?.click()}
+                disabled={isUploading}
+              >
+                <Upload className="size-4" />
+                Upload
+              </Button>
+              <p className="text-center text-xs text-muted-foreground">
+                (JPG, PNG, MP4, WebM, MOV)
+              </p>
+            </div>
 
             <div className="flex w-full items-center">
               <Separator className="flex-1" />
