@@ -15,6 +15,7 @@ import {
   ZoomContainer,
 } from "@/components/display/display-containers";
 import { DisplayCopyButton } from "@/components/display/display-copy-button";
+import { VideoControls } from "@/components/display/video-controls";
 import { Button } from "@/components/ui/button";
 
 export function UploadDisplay() {
@@ -133,6 +134,8 @@ export function UploadDisplay() {
             className={cn("w-auto", { hidden: !isAsciiActive })}
           />
         </ZoomContainer>
+
+        {type === "video" && hasUpload && <VideoControls videoRef={videoRef} />}
       </DisplayCanvasContainer>
     </DisplayContainer>
   );
