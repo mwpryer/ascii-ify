@@ -45,7 +45,10 @@ export function useUpload() {
     videoRef.current = video;
     video.src = URL.createObjectURL(file);
     video.loop = true;
-    await new Promise((resolve) => (video.onloadedmetadata = resolve));
+    await new Promise((resolve, reject) => {
+      video.onloadedmetadata = () => resolve(null);
+      video.onerror = () => reject();
+    });
     await video.play();
 
     render();
@@ -61,13 +64,12 @@ export function useUpload() {
     await img.decode();
     URL.revokeObjectURL(objectUrl);
 
-    await paint(img);
+    paint(img);
   }
 
-  async function upload(file: File) {
+  async function uploadFile(file: File) {
     if (isUploading || hasUpload) return;
     setIsUploading(true);
-
     clear();
 
     try {
@@ -85,6 +87,58 @@ export function useUpload() {
     }
   }
 
+  async function uploadUrl(url: string) {
+    if (isUploading || hasUpload) return;
+    setIsUploading(true);
+    clear();
+
+    try {
+      if (/\.(mp4|webm|mov|avi|mkv)$/i.test(url)) {
+        await uploadVideoUrl(url);
+      } else {
+        await uploadImageUrl(url);
+      }
+
+      setHasUpload(true);
+    } catch {
+      clear();
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  async function uploadVideoUrl(url: string) {
+    setType("video");
+
+    const video = document.createElement("video");
+    videoRef.current = video;
+    video.crossOrigin = "anonymous";
+    video.src = url;
+    video.loop = true;
+    await new Promise((resolve, reject) => {
+      video.onloadedmetadata = () => resolve(null);
+      video.onerror = () => reject();
+    });
+    await video.play();
+
+    render();
+  }
+
+  async function uploadImageUrl(url: string) {
+    setType("image");
+
+    const img = new Image();
+    imageRef.current = img;
+    img.crossOrigin = "anonymous";
+    img.src = url;
+    await new Promise((resolve, reject) => {
+      img.onload = () => resolve(null);
+      img.onerror = () => reject();
+    });
+
+    paint(img);
+  }
+
   function clear() {
     setHasUpload(false);
     setType(null);
@@ -94,6 +148,9 @@ export function useUpload() {
     }
 
     if (videoRef.current) {
+      if (videoRef.current.src?.startsWith("blob:")) {
+        URL.revokeObjectURL(videoRef.current.src);
+      }
       videoRef.current.pause();
       videoRef.current.src = "";
       videoRef.current.onloadedmetadata = null;
@@ -136,7 +193,8 @@ export function useUpload() {
     type,
     inputRef,
     canvasRef,
-    upload,
+    uploadFile,
+    uploadUrl,
     clear,
     videoRef,
   };

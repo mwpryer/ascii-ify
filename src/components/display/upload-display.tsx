@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { Download, Eye, EyeOff, Upload, X } from "lucide-react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { Download, Eye, EyeOff, Upload, X, Link } from "lucide-react";
 
 import { useApp } from "@/context/app-context";
 import { useUpload } from "@/hooks/use-upload";
@@ -17,6 +17,8 @@ import {
 import { DisplayCopyButton } from "@/components/display/display-copy-button";
 import { VideoControls } from "@/components/display/video-controls";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 export function UploadDisplay() {
   const { config } = useApp();
@@ -26,7 +28,8 @@ export function UploadDisplay() {
     type,
     inputRef: uploadInputRef,
     canvasRef: uploadCanvasRef,
-    upload,
+    uploadFile,
+    uploadUrl,
     clear,
     videoRef,
   } = useUpload();
@@ -43,6 +46,7 @@ export function UploadDisplay() {
     animate: type === "video",
   });
   const initialised = useRef(false);
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     if (hasUpload) {
@@ -63,6 +67,14 @@ export function UploadDisplay() {
     }
   }
 
+  function handleUrlSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (url.trim()) {
+      uploadUrl(url.trim());
+      setUrl("");
+    }
+  }
+
   return (
     <DisplayContainer>
       <DisplayActionsContainer>
@@ -80,7 +92,7 @@ export function UploadDisplay() {
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
-              upload(file);
+              uploadFile(file);
               e.target.value = "";
             }
           }}
@@ -114,14 +126,46 @@ export function UploadDisplay() {
 
       <DisplayCanvasContainer>
         <DisplayInset className={cn({ hidden: hasUpload })}>
-          <Button
-            variant="outline"
-            onClick={() => uploadInputRef.current?.click()}
-            disabled={isUploading}
-          >
-            <Upload className="size-4" />
-            Upload
-          </Button>
+          <div className="flex w-full max-w-sm flex-col items-center gap-6">
+            <Button
+              variant="outline"
+              onClick={() => uploadInputRef.current?.click()}
+              disabled={isUploading}
+            >
+              <Upload className="size-4" />
+              Upload
+            </Button>
+
+            <div className="flex w-full items-center">
+              <Separator className="flex-1" />
+              <span className="px-3 text-xs text-muted-foreground">or</span>
+              <Separator className="flex-1" />
+            </div>
+
+            <form onSubmit={handleUrlSubmit} className="w-full">
+              <div className="flex overflow-hidden rounded-md border border-input focus-within:border-primary">
+                <div className="flex items-center pl-3 text-muted-foreground">
+                  <Link className="size-4" />
+                </div>
+                <Input
+                  type="url"
+                  placeholder="https://example.com/image.jpg"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  disabled={isUploading}
+                  className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Button
+                  type="submit"
+                  variant="outline"
+                  className="h-auto rounded-none border-0 border-l"
+                  disabled={isUploading || !url.trim()}
+                >
+                  Load
+                </Button>
+              </div>
+            </form>
+          </div>
         </DisplayInset>
 
         <ZoomContainer disableZoom={!hasUpload}>
